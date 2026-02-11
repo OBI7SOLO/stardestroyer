@@ -1,0 +1,7 @@
+{
+  "name": "stardestroyer",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
