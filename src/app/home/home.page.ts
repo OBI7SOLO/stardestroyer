@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { PhotoService } from '../services/photo';
 
 @Component({
   selector: 'app-home',
@@ -6,8 +7,14 @@ import { Component } from '@angular/core';
   styleUrls: ['home.page.scss'],
   standalone: false,
 })
-export class HomePage {
+export class HomePage implements OnInit {
+  constructor(public photoService: PhotoService) {}
 
-  constructor() {}
+  async ngOnInit() {
+    await this.photoService.loadSaved();
+  }
 
+  addPhotoToGallery() {
+    this.photoService.addNewToGallery();
+  }
 }
