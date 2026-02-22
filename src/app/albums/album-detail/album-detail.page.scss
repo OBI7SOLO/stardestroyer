@@ -1,0 +1,19 @@
+.photo-container {
+  position: relative;
+  border: 2px solid transparent;
+
+  &.selected {
+    border-color: var(--ion-color-primary);
+    opacity: 0.8;
+  }
+
+  .check-icon {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    color: var(--ion-color-primary);
+    background: white;
+    border-radius: 50%;
+    font-size: 24px;
+  }
+}

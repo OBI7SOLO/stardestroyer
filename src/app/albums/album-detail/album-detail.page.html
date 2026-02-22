@@ -1,0 +1,67 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/albums"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ title }}</ion-title>
+    <ion-buttons slot="end" *ngIf="!isFavorites">
+      <ion-button (click)="addPhotos()">
+        <ion-icon slot="icon-only" name="add-circle"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-grid>
+    <ion-row>
+      <ion-col size="4" *ngFor="let photo of photos">
+        <ion-img [src]="photo.webviewPath" (click)="openPhoto(photo)"></ion-img>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <div *ngIf="photos.length === 0" class="ion-text-center ion-padding">
+    <p>No hay fotos en este álbum.</p>
+  </div>
+
+  <ion-modal [isOpen]="isModalOpen">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>Seleccionar Fotos</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="setOpen(false)">Cancelar</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding">
+        <ion-grid>
+          <ion-row>
+            <ion-col size="4" *ngFor="let photo of allPhotos">
+              <div
+                class="photo-container"
+                [class.selected]="selectedPhotos.includes(photo.id)"
+                (click)="toggleSelection(photo.id)"
+              >
+                <ion-img [src]="photo.webviewPath"></ion-img>
+                <ion-icon
+                  name="checkmark-circle"
+                  class="check-icon"
+                  *ngIf="selectedPhotos.includes(photo.id)"
+                ></ion-icon>
+              </div>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+        <ion-button
+          expand="block"
+          (click)="savePhotosToAlbum()"
+          [disabled]="selectedPhotos.length === 0"
+        >
+          Añadir Fotos
+        </ion-button>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+</ion-content>
