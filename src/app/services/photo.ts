@@ -5,8 +5,10 @@ import {
   CameraSource,
   Photo,
 } from '@capacitor/camera';
+import { Capacitor } from '@capacitor/core';
 import { Filesystem, Directory } from '@capacitor/filesystem';
 import { Preferences } from '@capacitor/preferences';
+import { Platform } from '@ionic/angular';
 
 export interface UserPhoto {
   filepath: string;
@@ -20,7 +22,27 @@ export class PhotoService {
   public photos: UserPhoto[] = [];
   private PHOTO_STORAGE: string = 'photos';
 
-  constructor() {}
+  constructor(private platform: Platform) {}
+
+  public async loadSaved() {
+    // Retrieve cached photo array data
+    const { value } = await Preferences.get({ key: this.PHOTO_STORAGE });
+    this.photos = (value ? JSON.parse(value) : []) as UserPhoto[];
+
+    // If running on the web...
+    if (!this.platform.is('hybrid')) {
+      for (let photo of this.photos) {
+        // Read each saved photo's data from the Filesystem
+        const readFile = await Filesystem.readFile({
+          path: photo.filepath,
+          directory: Directory.Data,
+        });
+
+        // Web platform only: Load the photo as base64 data
+        photo.webviewPath = `data:image/jpeg;base64,${readFile.data}`;
+      }
+    }
+  }
 
   public async addNewToGallery() {
     // Take a photo
@@ -28,6 +50,7 @@ export class PhotoService {
       resultType: CameraResultType.Uri,
       source: CameraSource.Camera,
       quality: 100,
+      saveToGallery: true,
     });
 
     const savedImageFile = await this.savePicture(capturedPhoto);
@@ -51,54 +74,19 @@ export class PhotoService {
       directory: Directory.Data,
     });
 
-    // Use webviewPath to display the new image instead of the base64 since it's
-    // already loaded into memory
-    return {
-      filepath: fileName,
-      webviewPath: photo.webPath,
-    };
-  }
-
-  private async readAsBase64(photo: Photo) {
-    // Fetch the photo, read as a blob, then convert to base64 format
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const response = await fetch(photo.webPath!);
-    const blob = await response.blob();
-
-    return (await this.convertBlobToBase64(blob)) as string;
-  }
-
-  private convertBlobToBase64 = (blob: Blob) =>
-    new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onerror = reject;
-      reader.onload = () => {
-        resolve(reader.result);
+    if (this.platform.is('hybrid')) {
+      // Display the new image by rewriting the 'file://' path to HTTP
+      return {
+        filepath: savedFile.uri,
+        webviewPath: Capacitor.convertFileSrc(savedFile.uri),
       };
-      reader.readAsDataURL(blob);
-    });
-
-  public async loadSaved() {
-    // Retrieve cached photo array data
-    const { value } = await Preferences.get({ key: this.PHOTO_STORAGE });
-    this.photos = (value ? JSON.parse(value) : []) as UserPhoto[];
-
-    // Easiest way to detect when running on the web vs. native
-    // "hybrid" will detect both Capacitor and Cordova
-    /* 
-       Note: Ensure to handle platform check if needed for web vs native file loading 
-       For this example, keeping it simple as web path works for now.
-       In a real app, reading file from filesystem on native devices might be needed.
-    */
-    for (let photo of this.photos) {
-      // Read each saved photo's data from the Filesystem
-      const readFile = await Filesystem.readFile({
-        path: photo.filepath,
-        directory: Directory.Data,
-      });
-
-      // Web platform only: Load the photo as base64 data
-      photo.webviewPath = `data:image/jpeg;base64,${readFile.data}`;
+    } else {
+      // Use webviewPath to display the new image instead of the base64 since it's
+      // already loaded into memory
+      return {
+        filepath: fileName,
+        webviewPath: photo.webPath,
+      };
     }
   }
 
@@ -107,7 +95,7 @@ export class PhotoService {
     this.photos.splice(position, 1);
 
     // Update photos array cache by overwriting the existing photo array
-    Preferences.set({
+    await Preferences.set({
       key: this.PHOTO_STORAGE,
       value: JSON.stringify(this.photos),
     });
@@ -119,4 +107,32 @@ export class PhotoService {
       directory: Directory.Data,
     });
   }
+
+  private async readAsBase64(photo: Photo) {
+    if (this.platform.is('hybrid')) {
+      // Read the file into base64 format
+      const file = await Filesystem.readFile({
+        path: photo.path!,
+      });
+
+      return file.data;
+    } else {
+      // Fetch the photo, read as a blob, then convert to base64 format
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const response = await fetch(photo.webPath!);
+      const blob = await response.blob();
+
+      return (await this.convertBlobToBase64(blob)) as string;
+    }
+  }
+
+  private convertBlobToBase64 = (blob: Blob) =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onerror = reject;
+      reader.onload = () => {
+        resolve(reader.result);
+      };
+      reader.readAsDataURL(blob);
+    });
 }
