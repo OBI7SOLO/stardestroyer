@@ -36,6 +36,13 @@ export class HomePage implements OnInit {
           },
         },
         {
+          text: photo.isFavorite ? 'Quitar de Favoritos' : 'Favorito',
+          icon: photo.isFavorite ? 'heart-dislike' : 'heart',
+          handler: () => {
+            this.photoService.toggleFavorite(photo);
+          },
+        },
+        {
           text: 'Delete',
           role: 'destructive',
           icon: 'trash',

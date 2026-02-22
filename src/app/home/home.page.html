@@ -1,5 +1,8 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
     <ion-title> Galeria de Fotos </ion-title>
   </ion-toolbar>
 </ion-header>
@@ -21,6 +24,12 @@
           [src]="photo.webviewPath"
           (click)="showActionSheet(photo, position)"
         ></ion-img>
+        <ion-icon
+          *ngIf="photo.isFavorite"
+          name="heart"
+          color="danger"
+          style="position: absolute; bottom: 5px; right: 5px; font-size: 24px"
+        ></ion-icon>
       </ion-col>
     </ion-row>
   </ion-grid>

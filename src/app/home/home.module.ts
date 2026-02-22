@@ -8,7 +8,13 @@ import { HomePageRoutingModule } from './home-routing.module';
 import { ImageModalComponent } from '../components/image-modal/image-modal.component';
 
 @NgModule({
-  imports: [CommonModule, FormsModule, IonicModule, HomePageRoutingModule],
-  declarations: [HomePage, ImageModalComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    IonicModule,
+    HomePageRoutingModule,
+    ImageModalComponent,
+  ],
+  declarations: [HomePage],
 })
 export class HomePageModule {}
