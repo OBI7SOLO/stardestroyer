@@ -1,12 +1,14 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { ModalController } from '@ionic/angular';
+import { ModalController, IonicModule } from '@ionic/angular';
+import { CommonModule } from '@angular/common';
 import { UserPhoto } from '../../services/photo';
 
 @Component({
   selector: 'app-image-modal',
   templateUrl: './image-modal.component.html',
   styleUrls: ['./image-modal.component.scss'],
-  standalone: false,
+  standalone: true,
+  imports: [CommonModule, IonicModule],
 })
 export class ImageModalComponent implements OnInit {
   @Input() photo!: UserPhoto;
