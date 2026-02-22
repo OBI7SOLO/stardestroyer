@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { PhotoService, UserPhoto } from '../services/photo';
-import { ActionSheetController } from '@ionic/angular';
+import { ActionSheetController, ModalController } from '@ionic/angular';
+import { ImageModalComponent } from '../components/image-modal/image-modal.component';
 
 @Component({
   selector: 'app-home',
@@ -12,6 +13,7 @@ export class HomePage implements OnInit {
   constructor(
     public photoService: PhotoService,
     public actionSheetController: ActionSheetController,
+    private modalController: ModalController,
   ) {}
 
   async ngOnInit() {
@@ -26,6 +28,13 @@ export class HomePage implements OnInit {
     const actionSheet = await this.actionSheetController.create({
       header: 'Photos',
       buttons: [
+        {
+          text: 'Ver',
+          icon: 'eye',
+          handler: () => {
+            this.openPhoto(photo);
+          },
+        },
         {
           text: 'Delete',
           role: 'destructive',
@@ -45,5 +54,15 @@ export class HomePage implements OnInit {
       ],
     });
     await actionSheet.present();
+  }
+
+  async openPhoto(photo: UserPhoto) {
+    const modal = await this.modalController.create({
+      component: ImageModalComponent,
+      componentProps: {
+        photo: photo,
+      },
+    });
+    return await modal.present();
   }
 }
