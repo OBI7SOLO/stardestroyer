@@ -1,19 +1,26 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title> Mi primera aplicación híbrida </ion-title>
-  </ion-toolbar>
-</ion-header>
-
-<ion-content>
-  <ion-card>
-    <ion-card-header>
-      <ion-card-title> Bienvenido a Ionic </ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      Esta es mi primera aplicación híbrida con Ionic y Angular.
-    </ion-card-content>
-    <ion-button expand="block" color="primary" (click)="mostrarMensaje()">
-      ¡Empecemos!
-    </ion-button>
-  </ion-card>
-</ion-content>
+<ion-app>
+  <ion-menu contentId="main-content">
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Menú</ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content class="ion-padding">
+      <ion-list>
+        <ion-menu-toggle auto-hide="false">
+          <ion-item button routerLink="/home" routerDirection="root">
+            <ion-icon slot="start" name="camera"></ion-icon>
+            <ion-label>Galería (Home)</ion-label>
+          </ion-item>
+          <ion-item button routerLink="/albums" routerDirection="root">
+            <ion-icon slot="start" name="albums"></ion-icon>
+            <ion-label>Álbumes</ion-label>
+          </ion-item>
+        </ion-menu-toggle>
+      </ion-list>
+    </ion-content>
+  </ion-menu>
+  <div id="main-content">
+    <ion-router-outlet></ion-router-outlet>
+  </div>
+</ion-app>
