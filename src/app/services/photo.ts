@@ -9,10 +9,14 @@ import { Capacitor } from '@capacitor/core';
 import { Filesystem, Directory } from '@capacitor/filesystem';
 import { Preferences } from '@capacitor/preferences';
 import { Platform } from '@ionic/angular';
+import { v4 as uuidv4 } from 'uuid';
 
 export interface UserPhoto {
+  id: string;
+  isFavorite: boolean;
   filepath: string;
   webviewPath?: string;
+  dateTaken?: Date;
 }
 
 @Injectable({
@@ -62,7 +66,15 @@ export class PhotoService {
     });
   }
 
-  private async savePicture(photo: Photo) {
+  public async toggleFavorite(photo: UserPhoto) {
+    photo.isFavorite = !photo.isFavorite;
+    await Preferences.set({
+      key: this.PHOTO_STORAGE,
+      value: JSON.stringify(this.photos),
+    });
+  }
+
+  private async savePicture(photo: Photo): Promise<UserPhoto> {
     // Convert photo to base64 format, required by Filesystem API to save
     const base64Data = await this.readAsBase64(photo);
 
@@ -74,20 +86,25 @@ export class PhotoService {
       directory: Directory.Data,
     });
 
+    const newPhoto: UserPhoto = {
+      id: uuidv4(),
+      isFavorite: false,
+      filepath: '',
+      webviewPath: '',
+      dateTaken: new Date(),
+    };
+
     if (this.platform.is('hybrid')) {
       // Display the new image by rewriting the 'file://' path to HTTP
-      return {
-        filepath: savedFile.uri,
-        webviewPath: Capacitor.convertFileSrc(savedFile.uri),
-      };
+      newPhoto.filepath = savedFile.uri;
+      newPhoto.webviewPath = Capacitor.convertFileSrc(savedFile.uri);
     } else {
       // Use webviewPath to display the new image instead of the base64 since it's
       // already loaded into memory
-      return {
-        filepath: fileName,
-        webviewPath: photo.webPath,
-      };
+      newPhoto.filepath = fileName;
+      newPhoto.webviewPath = photo.webPath;
     }
+    return newPhoto;
   }
 
   public async deletePicture(photo: UserPhoto, position: number) {
