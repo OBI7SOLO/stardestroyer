@@ -1,13 +1,15 @@
 import { TestBed } from '@angular/core/testing';
+import { IonicModule } from '@ionic/angular';
+import { PhotoService } from './photo';
 
-import { Photo } from './photo';
-
-describe('Photo', () => {
-  let service: Photo;
+describe('PhotoService', () => {
+  let service: PhotoService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(Photo);
+    TestBed.configureTestingModule({
+      imports: [IonicModule.forRoot()],
+    });
+    service = TestBed.inject(PhotoService);
   });
 
   it('should be created', () => {
