@@ -35,6 +35,10 @@ export class AlbumDetailPage implements OnInit {
     this.loadData();
   }
 
+  /**
+   * Determina si se deben cargar las fotos favoritas o el contenido de un álbum específico
+   * basándose en el ID de la ruta.
+   */
   loadData() {
     if (this.albumId === 'favorites') {
       this.isFavorites = true;
@@ -60,6 +64,9 @@ export class AlbumDetailPage implements OnInit {
     }
   }
 
+  /**
+   * Abre/Cierra el modal para seleccionar fotos para añadir al álbum.
+   */
   setOpen(isOpen: boolean) {
     this.isModalOpen = isOpen;
     if (isOpen) {

@@ -19,6 +19,10 @@ export class AlbumsPage implements OnInit {
     this.albumsService.loadAlbums();
   }
 
+  /**
+   * Muestra un diálogo para crear un nuevo álbum.
+   * Pide el título y llama al servicio para crearlo.
+   */
   async createAlbum() {
     const alert = await this.alertController.create({
       header: 'Nuevo Álbum',

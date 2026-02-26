@@ -16,10 +16,16 @@ export class HomePage implements OnInit {
     private modalController: ModalController,
   ) {}
 
+  /**
+   * Al iniciar, cargamos las fotos guardadas.
+   */
   async ngOnInit() {
     await this.photoService.loadSaved();
   }
 
+  /**
+   * Llama al servicio para tomar una nueva foto y añadirla a la galería.
+   */
   addPhotoToGallery() {
     this.photoService.addNewToGallery();
   }

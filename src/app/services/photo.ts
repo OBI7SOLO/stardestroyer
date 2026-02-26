@@ -28,6 +28,10 @@ export class PhotoService {
 
   constructor(private platform: Platform) {}
 
+  /**
+   * Carga las fotos guardadas desde el almacenamiento.
+   * En web, lee los archivos desde el sistema de archivos y los carga como base64.
+   */
   public async loadSaved() {
     // Retrieve cached photo array data
     const { value } = await Preferences.get({ key: this.PHOTO_STORAGE });
@@ -48,6 +52,9 @@ export class PhotoService {
     }
   }
 
+  /**
+   * Abre la cámara para tomar una foto y la guarda en la galería.
+   */
   public async addNewToGallery() {
     // Take a photo
     const capturedPhoto = await Camera.getPhoto({
@@ -74,6 +81,10 @@ export class PhotoService {
     });
   }
 
+  /**
+   * Guarda la foto en el sistema de archivos del dispositivo.
+   * Maneja la diferencia entre guardar en web y en dispositivo (Capacitor).
+   */
   private async savePicture(photo: Photo): Promise<UserPhoto> {
     // Convert photo to base64 format, required by Filesystem API to save
     const base64Data = await this.readAsBase64(photo);

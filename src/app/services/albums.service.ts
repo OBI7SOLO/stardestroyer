@@ -22,11 +22,19 @@ export class AlbumsService {
     this.loadAlbums();
   }
 
+  /**
+   * Carga la lista de álbumes desde el almacenamiento persistente (Preferences).
+   */
   public async loadAlbums() {
     const { value } = await Preferences.get({ key: this.ALBUM_STORAGE });
     this.albums = value ? JSON.parse(value) : [];
   }
 
+  /**
+   * Crea un nuevo álbum con un ID único y lo guarda.
+   * @param title Título del álbum
+   * @param description Descripción opcional
+   */
   public async createAlbum(title: string, description?: string) {
     const newAlbum: Album = {
       id: uuidv4(),
@@ -46,6 +54,10 @@ export class AlbumsService {
     await this.saveAlbums();
   }
 
+  /**
+   * Añade una foto existente a un álbum específico.
+   * Si es la primera foto, la establece como portada del álbum.
+   */
   public async addPhotoToAlbum(albumId: string, photoId: string) {
     const album = this.albums.find((a) => a.id === albumId);
     if (album && !album.photoIds.includes(photoId)) {
